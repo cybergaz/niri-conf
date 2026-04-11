@@ -135,7 +135,7 @@
     "interval": 6,
     "format": "󰾆   {usage}",
     "tooltip": true,
-    "on-click": "alacritty -t btop -e btop --utf-force"
+    "on-click": "pkill btop || alacritty -t alacritty_float_wide -e btop"
   },
   "memory": {
     "interval": 6,
@@ -164,7 +164,7 @@
     "format": "{icon}  {volume}",
     "tooltip": false,
     "format-muted": "🔇 sssh..",
-    "on-click": "pavucontrol",
+    "on-click": "pkill wiremix || alacritty -t alacritty_float_wide -e wiremix",
     "scroll-step": 1,
     "format-icons": {
       "headphone": "🎐",

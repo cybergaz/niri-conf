@@ -108,8 +108,8 @@ input {
     keyboard {
         xkb {
             // remapping keys (for complete list of options run 'xkbcli list')
-            options "caps:escape,altwin:swap_lalt_lwin,ctrl:swap_ralt_rctl"
-            // options "caps:escape"
+            // options "caps:escape,altwin:swap_lalt_lwin,ctrl:swap_ralt_rctl"
+            options "caps:escape"
         }
 
         repeat-delay 180
@@ -234,19 +234,290 @@ animations {
     }
 
     // Window opening animation. Note that this one has different defaults.
-    window-open {
-        // off
-        // duration-ms 400
-        // curve "cubic-bezier" 0.05 0.7 0.1 1
-        spring damping-ratio=1.0 stiffness=600 epsilon=0.00001
-        // spring damping-ratio=0.75 stiffness=400 epsilon=0.0001
+ // window-open {
+ //        duration-ms 500
+ //        curve "linear"
+ //
+ //        custom-shader r"
+ //        float hash(vec2 p) {
+ //            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+ //        }
+ //
+ //        float noise(vec2 p) {
+ //            vec2 i = floor(p);
+ //            vec2 f = fract(p);
+ //            f = f * f * (3.0 - 2.0 * f);
+ //            float a = hash(i);
+ //            float b = hash(i + vec2(1.0, 0.0));
+ //            float c = hash(i + vec2(0.0, 1.0));
+ //            float d = hash(i + vec2(1.0, 1.0));
+ //            return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+ //        }
+ //
+ //        float fbm(vec2 p) {
+ //            float v = 0.0;
+ //            float amp = 0.5;
+ //            for (int i = 0; i < 6; i++) {
+ //                v += amp * noise(p);
+ //                p *= 2.0;
+ //                amp *= 0.5;
+ //            }
+ //            return v;
+ //        }
+ //
+ //        float warpedFbm(vec2 p, float t) {
+ //            vec2 q = vec2(fbm(p + vec2(0.0, 0.0)),
+ //                            fbm(p + vec2(5.2, 1.3)));
+ //
+ //            vec2 r = vec2(fbm(p + 6.0 * q + vec2(1.7, 9.2) + 0.25 * t),
+ //                            fbm(p + 6.0 * q + vec2(8.3, 2.8) + 0.22 * t));
+ //
+ //            vec2 s = vec2(fbm(p + 5.0 * r + vec2(3.1, 7.4) + 0.18 * t),
+ //                            fbm(p + 5.0 * r + vec2(6.7, 0.9) + 0.2 * t));
+ //
+ //            return fbm(p + 6.0 * s);
+ //        }
+ //
+ //        vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+ //            float p = niri_clamped_progress;
+ //            vec2 uv = coords_geo.xy;
+ //            float seed = niri_random_seed * 100.0;
+ //
+ //            float t = p * 12.0 + seed;
+ //
+ //            float fluid = warpedFbm(uv * 2.0 + seed, t);
+ //
+ //            vec2 center = uv - 0.5;
+ //            float dist = length(center * vec2(1.0, 0.7));
+ //
+ //            float appear = (1.0 - dist * 1.2) + (1.0 - fluid) * 0.7;
+ //            float reveal = smoothstep(appear + 0.5, appear - 0.5, (1.0 - p) * 1.8);
+ //
+ //            float distort_strength = (1.0 - p) * (1.0 - p) * 0.35;
+ //            vec2 wq = vec2(fbm(uv * 2.0 + vec2(0.0, t * 0.2)),
+ //                            fbm(uv * 2.0 + vec2(5.2, t * 0.2)));
+ //            vec2 wr = vec2(fbm(uv * 2.0 + 4.0 * wq + vec2(1.7, 9.2)),
+ //                            fbm(uv * 2.0 + 4.0 * wq + vec2(8.3, 2.8)));
+ //            vec2 warped_uv = uv + (wr - 0.5) * distort_strength;
+ //
+ //            vec3 tex_coords = niri_geo_to_tex * vec3(warped_uv, 1.0);
+ //            vec4 color = texture2D(niri_tex, tex_coords.st);
+ //
+ //            return color * reveal;
+ //        }
+ //        "
+ //    }
+
+    //  window-close {
+    //     // duration-ms 200
+    //     // curve "ease-out-expo"
+    //     // spring damping-ratio=1.0 stiffness=600 epsilon=0.00001
+    //
+    //     duration-ms 300
+    //     curve "linear"
+    //
+    //     custom-shader r"
+    //         float hash(vec2 p) {
+    //             return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    //         }
+    //
+    //         float noise(vec2 p) {
+    //             vec2 i = floor(p);
+    //             vec2 f = fract(p);
+    //             f = f * f * (3.0 - 2.0 * f);
+    //             return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+    //                        mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+    //         }
+    //
+    //         float fbm(vec2 p) {
+    //             return noise(p) * 0.5 + noise(p * 2.0) * 0.25 + noise(p * 4.0) * 0.125;
+    //         }
+    //
+    //         vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+    //             float p = niri_clamped_progress;
+    //             vec2 uv = coords_geo.xy;
+    //
+    //             /* skip entirely in the first 10% — window is fully visible, waste nothing */
+    //             if (p < 0.1) return texture(niri_tex, (niri_geo_to_tex * vec3(uv, 1.0)).st);
+    //
+    //             float seed = niri_random_seed * 100.0;
+    //             float t = p * 8.0 + seed;
+    //             vec2 uv2 = uv * 2.0 + seed;
+    //
+    //             /* single warp layer, 3-octave fbm */
+    //             vec2 q = vec2(fbm(uv2), fbm(uv2 + vec2(5.2, 1.3)));
+    //             float fluid = fbm(uv2 + 3.0 * q + vec2(1.7 + 0.25 * t, 9.2));
+    //
+    //             float dist = length((uv - 0.5) * vec2(1.0, 0.7));
+    //             float dissolve = (1.0 - dist) * 1.2 + fluid * 0.7;
+    //             float remain = smoothstep(dissolve + 0.5, dissolve - 0.5, p * 1.8);
+    //
+    //             /* distortion only in first 60% where it's actually visible */
+    //             vec2 warped_uv = uv;
+    //             if (p < 0.6) {
+    //                 vec2 wq = vec2(fbm(uv2 + t * 0.2), fbm(uv2 + vec2(5.2, t * 0.2)));
+    //                 warped_uv = uv + (wq - 0.5) * (p * p * 0.3);
+    //             }
+    //
+    //             vec4 color = texture(niri_tex, (niri_geo_to_tex * vec3(clamp(warped_uv, 0.001, 0.999), 1.0)).st);
+    //             return color * remain * smoothstep(1.0, 0.75, p);
+    //         }
+    //     "
+    // }
+
+window-open {
+        duration-ms 700
+        curve "ease-out-expo"
+        custom-shader "vec4 fall_from_top(vec3 coords_geo, vec3 size_geo) {
+            float progress = niri_clamped_progress * niri_clamped_progress;
+            vec2 coords = (coords_geo.xy - vec2(0.5, 0.0)) * size_geo.xy;
+            coords.y += (1.0 - progress) * 1440.0;
+            float max_angle = mix(-0.5, 0.5, floor(niri_random_seed * 4.0) / 3.0);
+            float angle = (1.0 - progress) * max_angle;
+            mat2 rotate = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+            coords = rotate * coords;
+            coords_geo = vec3(coords / size_geo.xy + vec2(0.5, 0.0), 1.0);
+            vec3 coords_tex = niri_geo_to_tex * coords_geo;
+            return texture2D(niri_tex, coords_tex.st);
+        }
+        vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+            return fall_from_top(coords_geo, size_geo);
+        }"
     }
 
-     window-close {
-        // duration-ms 200
-        // curve "ease-out-expo"
-        spring damping-ratio=1.0 stiffness=600 epsilon=0.00001
+   window-close {
+        duration-ms 500
+        curve "linear"
+        custom-shader "vec4 fall_to_bottom(vec3 coords_geo, vec3 size_geo) {
+            float progress = niri_clamped_progress * niri_clamped_progress;
+            vec2 coords = (coords_geo.xy - vec2(0.5, 0.0)) * size_geo.xy;
+            coords.y -= progress * 1440.0;
+            float max_angle = mix(-0.5, 0.5, floor(niri_random_seed * 4.0) / 3.0);
+            float angle = progress * max_angle;
+            mat2 rotate = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+            coords = rotate * coords;
+            coords_geo = vec3(coords / size_geo.xy + vec2(0.5, 0.0), 1.0);
+            vec3 coords_tex = niri_geo_to_tex * coords_geo;
+            return texture2D(niri_tex, coords_tex.st);
+        }
+        vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+            return fall_to_bottom(coords_geo, size_geo);
+        }"
     }
+
+
+// window-open {
+//     duration-ms 600
+//     curve "ease-out-quad"
+//     custom-shader "
+//     vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+//         float progress = niri_clamped_progress;
+//
+//         // Completely random angle (0 to 2*PI)
+//         float random_angle = niri_random_seed * 6.28318;
+//
+//         // Rotate the coordinates to create tilted ribbons
+//         vec2 coords = coords_geo.xy - 0.5;
+//         float cos_a = cos(random_angle);
+//         float sin_a = sin(random_angle);
+//         vec2 rotated = vec2(
+//             coords.x * cos_a - coords.y * sin_a,
+//             coords.x * sin_a + coords.y * cos_a
+//         );
+//
+//         // Now work with rotated Y position for ribbon indexing
+//         float y_pos = rotated.y + 0.5;
+//
+//         // Equal-sized ribbons (20 total)
+//         float ribbon_count = 20.0;
+//         float ribbon_index = floor(y_pos * ribbon_count);
+//
+//         // Alternating pattern: even = left, odd = right
+//         float direction = mod(ribbon_index, 2.0) == 0.0 ? -1.0 : 1.0;
+//
+//         // Cascading delay
+//         float delay = ribbon_index / ribbon_count * 0.5;
+//         float ribbon_progress = clamp((progress - delay) / (1.0 - delay), 0.0, 1.0);
+//
+//         // Slide along the rotated X axis
+//         rotated.x += (1.0 - ribbon_progress) * direction * 2.0;
+//
+//         // Rotate back to get final coordinates
+//         coords = vec2(
+//             rotated.x * cos_a + rotated.y * sin_a,
+//             -rotated.x * sin_a + rotated.y * cos_a
+//         );
+//         coords += 0.5;
+//
+//         // Regular sampling
+//         vec3 coords_tex = niri_geo_to_tex * vec3(coords.x, coords.y, 1.0);
+//         vec4 color = texture2D(niri_tex, coords_tex.xy);
+//
+//         // Check if ribbon hasn't arrived yet
+//         if (coords.x < 0.0 || coords.x > 1.0) {
+//             return vec4(0.0);
+//         }
+//
+//         return color;
+//     }"
+// }
+//
+//
+// window-close {
+//     duration-ms 800
+//     curve "ease-out-quad"
+//     custom-shader "
+//     vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+//         float progress = niri_clamped_progress;
+//
+//         // Completely random angle (0 to 2*PI)
+//         float random_angle = niri_random_seed * 6.28318;
+//
+//         // Rotate the coordinates to create tilted ribbons
+//         vec2 coords = coords_geo.xy - 0.5; // center
+//         float cos_a = cos(random_angle);
+//         float sin_a = sin(random_angle);
+//         vec2 rotated = vec2(
+//             coords.x * cos_a - coords.y * sin_a,
+//             coords.x * sin_a + coords.y * cos_a
+//         );
+//
+//         // Now work with rotated Y position for ribbon indexing
+//         float y_pos = rotated.y + 0.5;
+//
+//         // Equal-sized ribbons (20 total)
+//         float ribbon_count = 20.0;
+//         float ribbon_index = floor(y_pos * ribbon_count);
+//
+//         // Alternating pattern: even = left, odd = right
+//         float direction = mod(ribbon_index, 2.0) == 0.0 ? -1.0 : 1.0;
+//
+//         // Cascading delay
+//         float delay = ribbon_index / ribbon_count * 0.5;
+//         float ribbon_progress = clamp((progress - delay) / (1.0 - delay), 0.0, 1.0);
+//
+//         // Slide along the rotated X axis
+//         rotated.x += ribbon_progress * direction * 2.0;
+//
+//         // Rotate back to get final coordinates
+//         coords = vec2(
+//             rotated.x * cos_a + rotated.y * sin_a,
+//             -rotated.x * sin_a + rotated.y * cos_a
+//         );
+//         coords += 0.5; // uncenter
+//
+//         // Regular sampling
+//         vec3 coords_tex = niri_geo_to_tex * vec3(coords.x, coords.y, 1.0);
+//         vec4 color = texture2D(niri_tex, coords_tex.xy);
+//
+//         // Check if ribbon has moved out of bounds
+//         if (coords.x < 0.0 || coords.x > 1.0) {
+//             return vec4(0.0);
+//         }
+//
+//         return color;
+//     }"
+// }
 
     window-movement {
         // duration-ms 300
@@ -254,15 +525,81 @@ animations {
         spring damping-ratio=1.0 stiffness=600 epsilon=0.00001
     }
 
-    // window-resize {
-    //     custom-shader r"
-    //         vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
-    //             vec3 coords_tex_next = niri_geo_to_tex_next * coords_curr_geo;
-    //             vec4 color = texture2D(niri_tex_next, coords_tex_next.st);
-    //             return color;
-    //         }
-    //         "
-    // }
+  // window-resize {
+  //       duration-ms 150
+  //       curve "linear"
+  //
+  //       custom-shader r"
+  //       float gh(float n) {
+  //           return fract(sin(n) * 43758.5453);
+  //       }
+  //
+  //       float hash(vec2 p) {
+  //           return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+  //       }
+  //
+  //       float noise(vec2 p) {
+  //           vec2 i = floor(p);
+  //           vec2 f = fract(p);
+  //
+  //           float a = hash(i);
+  //           float b = hash(i + vec2(1.0, 0.0));
+  //           float c = hash(i + vec2(0.0, 1.0));
+  //           float d = hash(i + vec2(1.0, 1.0));
+  //
+  //           vec2 u = f * f * (3.0 - 2.0 * f);
+  //
+  //           return mix(a, b, u.x) +
+  //                   (c - a) * u.y * (1.0 - u.x) +
+  //                   (d - b) * u.y * u.x;
+  //       }
+  //
+  //       vec4 resize_color(vec3 coords_geo, vec3 size_geo) {
+  //           if (coords_geo.x < 0.0 || coords_geo.x > 1.0 ||
+  //               coords_geo.y < 0.0 || coords_geo.y > 1.0) {
+  //               return vec4(0.0);
+  //           }
+  //
+  //           float p = niri_clamped_progress;
+  //           vec2 uv = coords_geo.xy;
+  //
+  //           float intensity = (p * p) * 0.5;
+  //
+  //           float niri_random_seed = 0.5 ;
+  //           float tick = floor(p * 60.0) + niri_random_seed * 1000.0;
+  //           float r1 = gh(tick * 1.13);
+  //           float r2 = gh(tick * 2.37);
+  //           float r3 = gh(tick * 3.71);
+  //           float r4 = gh(tick * 4.19);
+  //           float r5 = gh(tick * 5.53);
+  //           float r6 = gh(tick * 6.91);
+  //
+  //           vec2 off_r = vec2(r1 - 0.5, r2 - 0.5) * intensity * 0.15;
+  //           vec2 off_g = vec2(r3 - 0.5, r4 - 0.5) * intensity * 0.15;
+  //           vec2 off_b = vec2(r5 - 0.5, r6 - 0.5) * intensity * 0.15;
+  //
+  //           float slice = floor(uv.y * 20.0);
+  //           float slice_offset = (gh(slice + tick) - 0.5) * intensity * 0.08;
+  //
+  //           vec4 color;
+  //           color.r = texture2D(niri_tex_next, uv + off_r + vec2(slice_offset * 0.7, 0.0)).r;
+  //           color.g = texture2D(niri_tex_next, uv + off_g + vec2(slice_offset * 0.7, 0.0)).g;
+  //           color.b = texture2D(niri_tex_next, uv + off_b + vec2(slice_offset * 0.7, 0.0)).b;
+  //           color.a = 1.0;
+  //
+  //           float big_glitch = step(0.86, gh(tick * 0.77));
+  //           vec2 shift = vec2((gh(tick * 1.5) - 0.5) * 0.06 * big_glitch * intensity, 0.0);
+  //           vec3 tc_shift = size_geo * vec3(uv + shift, 1.0);
+  //           vec4 shifted = texture2D(niri_tex_next, tc_shift.st);
+  //           color = mix(color, shifted, intensity * 0.4 );
+  //
+  //           float scanline = 1.0 - sin(uv.y * size_geo.y * 3.14159) * 0.06 * intensity;
+  //           color.rgb *= scanline;
+  //
+  //           return color ;
+  //       }
+  //       "
+  //   }
 
     config-notification-open-close {
         // off
@@ -383,7 +720,7 @@ window-rule {
 }
 
 window-rule {
-    match title="btop"
+    match title="alacritty_float_wide"
     open-floating true
     min-width 1260
     min-height 664
@@ -391,11 +728,11 @@ window-rule {
 }
 
 window-rule {
-    match title="alacritty_float"
+    match title="alacritty_float_slim"
     open-floating true
-    default-column-width { proportion 0.61; }
-    default-window-height { fixed 604; }
-    default-floating-position x=370 y=190 relative-to="top-left"
+    max-width 600
+    min-height 670
+    default-floating-position x=650 y=170 relative-to="top-left"
 }
 
 window-rule {
@@ -472,8 +809,8 @@ binds {
     Mod+Shift+X                 repeat=false    { quit; }
     // Mod+Shift+P { power-off-monitors; }
 
-    Mod+Shift+Return            repeat=true     { spawn "sh" "-c" "alacritty -t alacritty_float"; }
-    Mod+T                       repeat=true     { spawn "sh" "-c" "alacritty -t alacritty_float"; }
+    Mod+Shift+Return            repeat=true     { spawn "sh" "-c" "alacritty -t alacritty_float_wide"; }
+    Mod+T                       repeat=true     { spawn "sh" "-c" "alacritty -t alacritty_float_wide"; }
     Mod+Return                  repeat=false    { spawn "alacritty"; }
     Mod+Space                   repeat=false    { spawn "sh" "-c" "pkill wofi || wofi --normal-window"; }
     Mod+i                       repeat=false    { spawn "sh" "-c" "pkill wofi || ~/scripts/wofi/clipboard.wofi.sh"; }
@@ -484,9 +821,10 @@ binds {
     Super+Shift+E               repeat=false    { spawn "nemo" "/home/gaz/workspace"; }
     Super+W                     repeat=false    { spawn "firefox"; }
     Super+Shift+W               repeat=false    { spawn "firefox" "--private-window"; }
-    Super+N                     repeat=false    { spawn "sh" "-c" "pkill iwgtk || iwgtk"; }
-    Super+Escape                repeat=false    { spawn "sh" "-c" "pkill btop || alacritty -t btop -e btop"; }
-    Super+B                     repeat=false    { spawn "sh" "-c" "~/scripts/system/bluetooth_particular.sh"; }
+    Super+N                     repeat=false    { spawn-sh "pkill impala || alacritty -t alacritty_float_slim -e impala"; }
+    Super+Escape                repeat=false    { spawn-sh "pkill btop || alacritty -t alacritty_float_wide -e btop"; }
+    Super+B                     repeat=false    { spawn-sh "pkill bluetui || alacritty -t alacritty_float_slim -e bluetui"; }
+    Super+Shift+A               repeat=false    { spawn-sh "pkill wiremix || alacritty -t alacritty_float_wide -e wiremix"; }
     Super+Ctrl+B                repeat=false    { spawn "sh" "-c" "~/scripts/system/bluetooth-battery.sh"; }
     Super+Shift+C               repeat=false    { spawn "sh" "-c" "hyprpicker | tr -d '\n' | wl-copy"; }
     Super+Shift+R               repeat=false    { spawn "sh" "-c" "~/scripts/niri/toggle-key-remaps.sh && notify-send -i input-keyboard-symbolic 'keyboard layout changed'"; }

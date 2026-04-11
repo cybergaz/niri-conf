@@ -23,8 +23,8 @@ white = "#cdd6f4"
 yellow = "#f09383"
 
 [colors.primary]
+# background = "#04080c"
 background = "#080a0d"
-# background = "#000000"
 foreground = "#d0e0f0"
 
 [colors.vi_mode_cursor]
@@ -69,14 +69,3 @@ lines = 28
 [window.padding]
 x = 10
 y = 8
-
-[[keyboard.bindings]]
-key = "Return"
-mods = "Shift"
-chars = "\u001B\r"
-
-# to register ctrl+; in neovim inside a tmux session
-[[keyboard.bindings]]
-key = "Semicolon"
-mods = "Control"
-chars = "\u001b[59;5u"
