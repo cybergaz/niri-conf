@@ -23,13 +23,41 @@ if status is-interactive
     # ---------------------------------------------------
 
     # core utils rust replacements
-    alias ls="eza -a"
-    alias l="eza -la"
-    alias grep="rg"
+    function ls
+        if type -q eza
+            eza -a $argv
+        else
+            command ls -a --color=auto $argv
+        end
+    end
+    function l
+        if type -q eza
+            eza -la $argv
+        else
+            command ls -la --color=auto $argv
+        end
+    end
+    function grep
+        if type -q rg
+            rg $argv
+        else
+            command grep --color=auto $argv
+        end
+    end
+    function cp
+        if type -q xcp
+            xcp -r $argv
+        else
+            command cp -r $argv
+        end
+    end
+    # alias ls="eza -a"
+    # alias l="eza -la"
+    # alias grep="rg"
+    # alias cp="xcp -r"
+    alias du="dust"
     alias zip="zip -r"
     alias unzip="ripunzip unzip-file"
-    alias cp="xcp -r"
-    alias du="dust"
 
     # neovim
     alias vim="nvim"

@@ -46,8 +46,9 @@ output "HDMI-A-1" {
     scale 1.0
     // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
     transform "normal"
-    mode "1920x1080@60.000"
-    position x=1920 y=0
+    // mode "1920x1080@60.000"
+    mode "1920x1080@100.003"
+    // position x=1920 y=0
     background-color "transparent"
 }
 
@@ -1166,22 +1167,22 @@ animations {
 //  Global Window Rules
 // ----------------------------------
 window-rule {
-    geometry-corner-radius 10
+    geometry-corner-radius 15
     clip-to-geometry true
     draw-border-with-background false
     opacity 0.5
     background-effect {
         blur true
-        xray true
+        xray false
         noise 0.02
         saturation 0.1
     }
 
     popups {
         opacity 0.8
-        geometry-corner-radius 10
+        geometry-corner-radius 15
         background-effect {
-            xray false
+            xray true
             blur true
             noise 0.02
             saturation 1.5
@@ -1318,10 +1319,9 @@ window-rule {
 // }
 layer-rule {
     geometry-corner-radius 15
-    // clip-to-geometry true
-    // draw-border-with-background false
     background-effect {
         blur true
+        xray false
         noise 0.01
         saturation 1.5
     }
@@ -1331,13 +1331,18 @@ layer-rule {
         geometry-corner-radius 12
 
         background-effect {
-            xray false
             blur true
+            xray false
             noise 0.02
             saturation 1.5
         }
     }
     
+}
+
+layer-rule {
+    match namespace="awww-daemon"
+    place-within-backdrop true
 }
 
 layer-rule {
@@ -1349,6 +1354,19 @@ layer-rule {
     match namespace="wofi"
     baba-is-float false
 }
+
+layer-rule {
+    match namespace="notifications"
+    baba-is-float true
+    geometry-corner-radius 42
+    background-effect {
+        blur true
+        xray false
+        noise 0.01
+        saturation 1.0
+    }
+}
+
 // declare workspaces
 // workspace "browser"
 // workspace "chat"
@@ -1478,20 +1496,33 @@ binds {
     Mod+Shift+0                 repeat=false    { move-window-to-workspace 10; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
-    XF86AudioRaiseVolume        { spawn "wpctl" "set-volume" "-l" "2.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
-    SHIFT+F7                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%"; }
-    SHIFT+F4                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%"; }
-    XF86AudioLowerVolume        { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
-    SHIFT+F8                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "100%"; }
-    SHIFT+F5                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "100%"; }
+    // XF86AudioRaiseVolume        { spawn "wpctl" "set-volume" "-l" "2.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    // SHIFT+F7                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%"; }
+    // SHIFT+F4                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%"; }
+    // XF86AudioLowerVolume        { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    // SHIFT+F8                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "100%"; }
+    // SHIFT+F5                    { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "100%"; }
+    // XF86AudioMute               { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+
+    // SHIFT+XF86AudioRaiseVolume  { spawn "brightnessctl" "set" "5%+"; }
+    // SHIFT+XF86AudioLowerVolume  { spawn "brightnessctl" "set" "5%-"; }
+    // XF86MonBrightnessDown       { spawn "brightnessctl" "set" "5%-"; }
+    // XF86MonBrightnessUp         { spawn "brightnessctl" "set" "5%+"; }
+    // SHIFT+F2                    { spawn "brightnessctl" "set" "1"; }
+    // SHIFT+F3                    { spawn "brightnessctl" "set" "100%"; }
+
+    XF86AudioRaiseVolume  allow-when-locked=true  { spawn-sh "~/scripts/system/volume.sh 5%+"; }
+    SHIFT+F7              allow-when-locked=true  { spawn-sh "~/scripts/system/volume.sh 5%"; }
+    XF86AudioLowerVolume  allow-when-locked=true  { spawn-sh "~/scripts/system/volume.sh 5%-"; }
+    SHIFT+F8              allow-when-locked=true  { spawn-sh "~/scripts/system/volume.sh 100%"; }
     XF86AudioMute               { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
 
-    SHIFT+XF86AudioRaiseVolume  { spawn "brightnessctl" "set" "5%+"; }
-    SHIFT+XF86AudioLowerVolume  { spawn "brightnessctl" "set" "5%-"; }
-    XF86MonBrightnessDown       { spawn "brightnessctl" "set" "5%-"; }
-    XF86MonBrightnessUp         { spawn "brightnessctl" "set" "5%+"; }
-    SHIFT+F2                    { spawn "brightnessctl" "set" "1"; }
-    SHIFT+F3                    { spawn "brightnessctl" "set" "100%"; }
+    SHIFT+XF86AudioRaiseVolume  allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 5%+"; }
+    SHIFT+XF86AudioLowerVolume  allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 5%-"; }
+    XF86MonBrightnessUp         allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 5%+"; }
+    XF86MonBrightnessDown       allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 5%-"; }
+    SHIFT+F2                    allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 1"; }
+    SHIFT+F3                    allow-when-locked=true  { spawn-sh "~/scripts/system/brightness.sh 100%"; }
 
     XF86PowerOff                { spawn-sh "hyprlock & sleep 0.5 && systemctl suspend"; }
 
